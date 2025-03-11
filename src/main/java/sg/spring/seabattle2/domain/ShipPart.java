@@ -10,6 +10,7 @@ import java.util.UUID;
 @Setter
 public class ShipPart extends UUIDDomainIdentifier {
     public static ShipPart MISSED = new ShipPart(true);
+    private String elementId;
 
     public ShipPart(UUID uuid) {
         super(uuid);

@@ -13,6 +13,14 @@ public class TwoPlayerGamePlayer extends SerialDomainIdentifier implements IGame
     private String name;
     private GameMap opponentMap;
 
+    public TwoPlayerGamePlayer() {
+    }
+
+    public TwoPlayerGamePlayer(TwoPlayerColor color, String name) {
+        this.color = color;
+        this.name = name;
+    }
+
     @Override
     public int getGameIdentifier() {
         return color.ordinal();

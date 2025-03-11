@@ -10,7 +10,11 @@ import java.util.UUID;
 @Setter
 public abstract class GameState extends UUIDDomainIdentifier {
     protected final UUID uuid;
-    protected GamePhase gamePhase;
+    protected GamePhase gamePhase = GamePhase.SETUP;
+
+    protected GameState() {
+        this(UUID.randomUUID());
+    }
 
     protected GameState(UUID uuid) {
         this.uuid = uuid;

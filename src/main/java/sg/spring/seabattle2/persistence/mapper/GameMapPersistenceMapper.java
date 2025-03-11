@@ -39,6 +39,7 @@ public class GameMapPersistenceMapper implements IDomainPersistenceMapper<GameMa
                 ShipPart shipPart = new ShipPart();
                 shipPart.setIdentifier(entry.getKey());
                 shipPart.setHit(shipPartRelation.isHit());
+                shipPart.setElementId(shipPartRelation.getId());
 
                 int currentIndex = shipPartRelation.getIndex();
                 int[] otherIndexes = entry.getValue().stream()
@@ -46,6 +47,8 @@ public class GameMapPersistenceMapper implements IDomainPersistenceMapper<GameMa
                         .filter(index -> index != currentIndex)
                         .toArray();
                 shipPart.setOtherPartsLocations(otherIndexes);
+
+                gameMap.getShipParts()[currentIndex] = shipPart;
             }
         }
 
@@ -59,6 +62,9 @@ public class GameMapPersistenceMapper implements IDomainPersistenceMapper<GameMa
         }
 
         GameMapNode gameMapNode = new GameMapNode();
+
+        //TODO: fix naming
+        gameMapNode.setRootSize(domain.getSizeRoot());
 
         for (int i = 0; i < domain.getShipParts().length; i++) {
             ShipPart part = domain.getShipParts()[i];
@@ -74,6 +80,7 @@ public class GameMapPersistenceMapper implements IDomainPersistenceMapper<GameMa
             ShipPartRelation relation = new ShipPartRelation();
             relation.setIndex(i);
             relation.setHit(part.isHit());
+            relation.setId(part.getElementId());
 
             ShipNode shipNode = new ShipNode();
             shipNode.setId(part.getIdentifier());

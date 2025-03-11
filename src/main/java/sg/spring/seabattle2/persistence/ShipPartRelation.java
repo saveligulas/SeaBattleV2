@@ -14,7 +14,8 @@ import sg.spring.core.persistence.provider.neo4j.RelationshipPropertiesBase;
 @Setter
 public class ShipPartRelation {
     public static final String TYPE = "HAS_HAPPENED";
-    @Id
+    @RelationshipId
+    private String id;
     private Integer index;
     private boolean isHit;
     @TargetNode

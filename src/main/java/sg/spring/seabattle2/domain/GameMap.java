@@ -6,9 +6,15 @@ import sg.spring.core.domain.SerialDomainIdentifier;
 @Getter
 public class GameMap extends SerialDomainIdentifier {
     private final ShipPart[] shipParts;
+    private final int sizeRoot;
+
+    public GameMap() {
+        this(8);
+    }
 
     public GameMap(int sizeRoot) {
         shipParts = new ShipPart[sizeRoot * sizeRoot];
+        this.sizeRoot = sizeRoot;
     }
 
     public ShotResult hit(int x, int y){

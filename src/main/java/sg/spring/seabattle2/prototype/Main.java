@@ -8,6 +8,7 @@ import sg.spring.seabattle2.domain.twoplayer.TwoPlayerGame;
 import sg.spring.seabattle2.domain.twoplayer.TwoPlayerGamePlayer;
 import sg.spring.seabattle2.persistence.TwoPlayerGameNode;
 import sg.spring.seabattle2.persistence.mapper.TwoPlayerGamePersistenceMapper;
+import sg.spring.seabattle2.persistence.mapper.TwoPlayerGamePlayerPersistenceMapper;
 
 import java.util.UUID;
 
@@ -47,6 +48,7 @@ public class Main {
         testGameHits(game);
 
         TwoPlayerGameNode gameNode = TwoPlayerGamePersistenceMapper.INSTANCE.toEntity(game);
+        TwoPlayerGame mappedGame = TwoPlayerGamePersistenceMapper.INSTANCE.toDomain(gameNode);
         System.out.println("test");
     }
 
@@ -73,6 +75,8 @@ public class Main {
         System.out.println("Hit at (0,0): " + game.getPlayerBlue().getOpponentMap().hit(0, 0));
         System.out.println("Hit at (1,0): " + game.getPlayerBlue().getOpponentMap().hit(1, 0));
         System.out.println("Hit at (2,0): " + game.getPlayerBlue().getOpponentMap().hit(2, 0));
+
+        System.out.println("Miss at (4,4): " + game.getPlayerBlue().getOpponentMap().hit(4, 4));
 
         System.out.println("\nTesting Hits on Player Blue's Map:");
         System.out.println("Hit at (0,0): " + game.getPlayerRed().getOpponentMap().hit(0, 0));
