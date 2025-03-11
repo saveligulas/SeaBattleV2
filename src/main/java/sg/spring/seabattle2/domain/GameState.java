@@ -1,11 +1,13 @@
 package sg.spring.seabattle2.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import sg.spring.core.domain.UUIDDomainIdentifier;
 
 import java.util.UUID;
 
 @Getter
+@Setter
 public abstract class GameState extends UUIDDomainIdentifier {
     protected final UUID uuid;
     protected GamePhase gamePhase;

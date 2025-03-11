@@ -1,6 +1,10 @@
 package sg.spring.seabattle2.domain;
 
-public class GameMap {
+import lombok.Getter;
+import sg.spring.core.domain.SerialDomainIdentifier;
+
+@Getter
+public class GameMap extends SerialDomainIdentifier {
     private final ShipPart[] shipParts;
 
     public GameMap(int sizeRoot) {
@@ -30,4 +34,7 @@ public class GameMap {
         return ShotResult.MISS;
     }
 
+    public void placeShipPart(ShipPart shipPart, int index) {
+        shipParts[index] = shipPart;
+    }
 }

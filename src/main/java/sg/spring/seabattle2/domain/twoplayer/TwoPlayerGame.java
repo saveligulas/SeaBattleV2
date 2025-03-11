@@ -13,7 +13,7 @@ import java.util.UUID;
 public class TwoPlayerGame extends GameState {
     private TwoPlayerGamePlayer playerRed;
     private TwoPlayerGamePlayer playerBlue;
-    private List<Integer> shipsAllowed;
+    private List<Integer> allowedShips;
 
     public TwoPlayerGame(UUID uuid) {
         super(uuid);

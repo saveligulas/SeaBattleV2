@@ -2,16 +2,22 @@ package sg.spring.seabattle2.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import sg.spring.core.domain.UUIDDomainIdentifier;
+
+import java.util.UUID;
 
 @Getter
 @Setter
-public class ShipPart {
+public class ShipPart extends UUIDDomainIdentifier {
     public static ShipPart MISSED = new ShipPart(true);
+
+    public ShipPart(UUID uuid) {
+        super(uuid);
+    }
 
     private boolean isHit;
     @Getter
     private int[] otherPartsLocations;
-    private int shipId;
 
     public ShipPart() {
         this(false);
