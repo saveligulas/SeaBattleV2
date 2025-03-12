@@ -1,6 +1,7 @@
 package sg.spring.seabattle2.persistence.mapper;
 
 import sg.spring.core.mapper.IDomainPersistenceMapper;
+import sg.spring.seabattle2.domain.twoplayer.TwoPlayerColor;
 import sg.spring.seabattle2.domain.twoplayer.TwoPlayerGame;
 import sg.spring.seabattle2.persistence.TwoPlayerGameNode;
 
@@ -18,8 +19,17 @@ public class TwoPlayerGamePersistenceMapper implements IDomainPersistenceMapper<
         }
 
         TwoPlayerGame game = new TwoPlayerGame(entity.getIdentifier());
-        game.setPlayerRed(TwoPlayerGamePlayerPersistenceMapper.INSTANCE.toDomain(entity.getPlayerRed()));
-        game.setPlayerBlue(TwoPlayerGamePlayerPersistenceMapper.INSTANCE.toDomain(entity.getPlayerBlue()));
+        //TODO: DRY this
+        game.setPlayerRed(TwoPlayerGamePlayerPersistenceMapper.INSTANCE.toDomain(entity.getPlayers()
+                .stream()
+                .filter(p -> p.getColor().equals(TwoPlayerColor.RED))
+                .findFirst()
+                .orElse(null)));
+        game.setPlayerBlue(TwoPlayerGamePlayerPersistenceMapper.INSTANCE.toDomain(entity.getPlayers()
+                .stream()
+                .filter(p -> p.getColor().equals(TwoPlayerColor.BLUE))
+                .findFirst()
+                .orElse(null)));
         game.setAllowedShips(entity.getAllowedShips());
         game.setGamePhase(entity.getPhase());
 
@@ -33,9 +43,9 @@ public class TwoPlayerGamePersistenceMapper implements IDomainPersistenceMapper<
         }
 
         TwoPlayerGameNode entity = new TwoPlayerGameNode();
-        entity.setId(domain.getUuid());
-        entity.setPlayerRed(TwoPlayerGamePlayerPersistenceMapper.INSTANCE.toEntity(domain.getPlayerRed()));
-        entity.setPlayerBlue(TwoPlayerGamePlayerPersistenceMapper.INSTANCE.toEntity(domain.getPlayerBlue()));
+        entity.setId(domain.getIdentifier());
+        entity.getPlayers().add(TwoPlayerGamePlayerPersistenceMapper.INSTANCE.toEntity(domain.getPlayerRed()));
+        entity.getPlayers().add(TwoPlayerGamePlayerPersistenceMapper.INSTANCE.toEntity(domain.getPlayerBlue()));
         entity.setAllowedShips(domain.getAllowedShips());
         entity.setPhase(domain.getGamePhase());
 

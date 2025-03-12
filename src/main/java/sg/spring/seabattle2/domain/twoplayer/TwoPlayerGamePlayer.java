@@ -8,7 +8,8 @@ import sg.spring.seabattle2.domain.IGamePlayer;
 
 @Getter
 @Setter
-public class TwoPlayerGamePlayer extends SerialDomainIdentifier implements IGamePlayer {
+public class TwoPlayerGamePlayer implements IGamePlayer {
+    private String id;
     private TwoPlayerColor color;
     private String name;
     private GameMap opponentMap;

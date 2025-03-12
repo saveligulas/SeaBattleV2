@@ -3,6 +3,7 @@ package sg.spring.seabattle2.persistence;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;
+import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 import sg.spring.core.persistence.provider.neo4j.Neo4jNodeIdentifier;
@@ -15,10 +16,9 @@ import sg.spring.seabattle2.domain.twoplayer.TwoPlayerColor;
 @Node
 @Getter
 @Setter
-public class TwoPlayerGamePlayerNode extends Neo4jSerialIdentifier {
-    @Enumerated(value = EnumType.STRING)
-    private TwoPlayerColor color;
+public class TwoPlayerGamePlayerNode {
+    @Id
     private String name;
     @Relationship(type = "HAS_MAP", direction = Relationship.Direction.OUTGOING)
-    private GameMapNode gameMap;
+    private GameMapNodeRelation gameMap;
 }

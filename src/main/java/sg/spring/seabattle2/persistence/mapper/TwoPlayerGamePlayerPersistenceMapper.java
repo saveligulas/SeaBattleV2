@@ -5,42 +5,45 @@ import sg.spring.core.mapper.IDomainPersistenceMapper;
 import sg.spring.seabattle2.domain.twoplayer.TwoPlayerGame;
 import sg.spring.seabattle2.domain.twoplayer.TwoPlayerGamePlayer;
 import sg.spring.seabattle2.persistence.TwoPlayerGamePlayerNode;
+import sg.spring.seabattle2.persistence.TwoPlayerGamePlayerRelation;
 
-public class TwoPlayerGamePlayerPersistenceMapper implements IDomainPersistenceMapper<TwoPlayerGamePlayer, TwoPlayerGamePlayerNode> {
+public class TwoPlayerGamePlayerPersistenceMapper implements IDomainPersistenceMapper<TwoPlayerGamePlayer, TwoPlayerGamePlayerRelation> {
     public static final TwoPlayerGamePlayerPersistenceMapper INSTANCE = new TwoPlayerGamePlayerPersistenceMapper();
     
     private TwoPlayerGamePlayerPersistenceMapper() {
     }
-    
+
     @Override
-    public @Nullable TwoPlayerGamePlayer toDomain(@Nullable TwoPlayerGamePlayerNode entity) {
+    public @Nullable TwoPlayerGamePlayer toDomain(@Nullable TwoPlayerGamePlayerRelation entity) {
         if (entity == null) {
             return null;
         }
 
         TwoPlayerGamePlayer player = new TwoPlayerGamePlayer();
-
-        player.setIdentifier(entity.getIdentifier());
+        player.setId(entity.getId());
         player.setColor(entity.getColor());
-        player.setName(entity.getName());
-        player.setOpponentMap(GameMapPersistenceMapper.INSTANCE.toDomain(entity.getGameMap()));
+        player.setName(entity.getPlayer().getName());
+        player.setOpponentMap(GameMapPersistenceMapper.INSTANCE.toDomain(entity.getPlayer().getGameMap()));
 
         return player;
     }
 
     @Override
-    public @Nullable TwoPlayerGamePlayerNode toEntity(@Nullable TwoPlayerGamePlayer domain) {
-
+    public @Nullable TwoPlayerGamePlayerRelation toEntity(@Nullable TwoPlayerGamePlayer domain) {
         if (domain == null) {
             return null;
         }
 
+        TwoPlayerGamePlayerRelation relation = new TwoPlayerGamePlayerRelation();
+        relation.setId(domain.getId());
+        relation.setColor(domain.getColor());
+
         TwoPlayerGamePlayerNode playerNode = new TwoPlayerGamePlayerNode();
-        playerNode.setId(domain.getIdentifier());
-        playerNode.setColor(domain.getColor());
         playerNode.setName(domain.getName());
         playerNode.setGameMap(GameMapPersistenceMapper.INSTANCE.toEntity(domain.getOpponentMap()));
 
-        return playerNode;
+        relation.setPlayer(playerNode);
+
+        return relation;
     }
 }

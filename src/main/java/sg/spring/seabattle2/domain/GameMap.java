@@ -1,10 +1,13 @@
 package sg.spring.seabattle2.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import sg.spring.core.domain.SerialDomainIdentifier;
 
 @Getter
+@Setter
 public class GameMap extends SerialDomainIdentifier {
+    private Long relationshipId;
     private final ShipPart[] shipParts;
     private final int sizeRoot;
 

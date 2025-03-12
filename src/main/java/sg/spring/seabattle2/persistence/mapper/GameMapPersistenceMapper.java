@@ -5,6 +5,7 @@ import sg.spring.core.mapper.IDomainPersistenceMapper;
 import sg.spring.seabattle2.domain.GameMap;
 import sg.spring.seabattle2.domain.ShipPart;
 import sg.spring.seabattle2.persistence.GameMapNode;
+import sg.spring.seabattle2.persistence.GameMapNodeRelation;
 import sg.spring.seabattle2.persistence.ShipNode;
 import sg.spring.seabattle2.persistence.ShipPartRelation;
 
@@ -13,7 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class GameMapPersistenceMapper implements IDomainPersistenceMapper<GameMap, GameMapNode> {
+public class GameMapPersistenceMapper implements IDomainPersistenceMapper<GameMap, GameMapNodeRelation> {
     public static final GameMapPersistenceMapper INSTANCE = new GameMapPersistenceMapper();
 
     private GameMapPersistenceMapper() {
@@ -21,14 +22,16 @@ public class GameMapPersistenceMapper implements IDomainPersistenceMapper<GameMa
 
 
     @Override
-    public @Nullable GameMap toDomain(@Nullable GameMapNode entity) {
+    public @Nullable GameMap toDomain(@Nullable GameMapNodeRelation entity) {
         if (entity == null) {
             return null;
         }
 
-        GameMap gameMap = new GameMap(entity.getRootSize());
+        GameMap gameMap = new GameMap(entity.getMap().getRootSize());
+        gameMap.setIdentifier(entity.getMap().getIdentifier());
+        gameMap.setRelationshipId(entity.getId());
 
-        Map<UUID, Set<ShipPartRelation>> shipMap = entity.getShipParts().stream()
+        Map<UUID, Set<ShipPartRelation>> shipMap = entity.getMap().getShipParts().stream()
                 .collect(Collectors.groupingBy(
                         relation -> relation.getShip().getIdentifier(),
                         Collectors.toSet()
@@ -56,7 +59,7 @@ public class GameMapPersistenceMapper implements IDomainPersistenceMapper<GameMa
     }
 
     @Override
-    public @Nullable GameMapNode toEntity(@Nullable GameMap domain) {
+    public @Nullable GameMapNodeRelation toEntity(@Nullable GameMap domain) {
         if (domain == null) {
             return null;
         }
@@ -65,6 +68,7 @@ public class GameMapPersistenceMapper implements IDomainPersistenceMapper<GameMa
 
         //TODO: fix naming
         gameMapNode.setRootSize(domain.getSizeRoot());
+        gameMapNode.setId(domain.getIdentifier());
 
         for (int i = 0; i < domain.getShipParts().length; i++) {
             ShipPart part = domain.getShipParts()[i];
@@ -89,6 +93,10 @@ public class GameMapPersistenceMapper implements IDomainPersistenceMapper<GameMa
             gameMapNode.getShipParts().add(relation);
         }
 
-        return gameMapNode;
+        GameMapNodeRelation gameMapNodeRelation = new GameMapNodeRelation();
+        gameMapNodeRelation.setId(domain.getRelationshipId());
+        gameMapNodeRelation.setMap(gameMapNode);
+
+        return gameMapNodeRelation;
     }
 }

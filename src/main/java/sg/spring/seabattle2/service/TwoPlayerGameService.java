@@ -8,6 +8,7 @@ import sg.spring.seabattle2.domain.ShipPart;
 import sg.spring.seabattle2.domain.twoplayer.TwoPlayerColor;
 import sg.spring.seabattle2.domain.twoplayer.TwoPlayerGame;
 import sg.spring.seabattle2.domain.twoplayer.TwoPlayerGamePlayer;
+import sg.spring.seabattle2.persistence.TwoPlayerGameNode;
 import sg.spring.seabattle2.persistence.mapper.TwoPlayerGamePersistenceMapper;
 import sg.spring.seabattle2.persistence.repo.TwoPlayerGameNodeRepository;
 
@@ -43,7 +44,7 @@ public class TwoPlayerGameService {
 
 
         twoPlayerGameNodeRepository.save(TwoPlayerGamePersistenceMapper.INSTANCE.toEntity(twoPlayerGame));
-        return twoPlayerGame.getUuid();
+        return twoPlayerGame.getIdentifier();
     }
 
     public GameMap setupMap(UUID gameId, TwoPlayerColor playerColor, List<List<Integer>> ships) {
@@ -61,13 +62,8 @@ public class TwoPlayerGameService {
         }
 
         player.setOpponentMap(map);
-
-        twoPlayerGameNodeRepository.save(TwoPlayerGamePersistenceMapper.INSTANCE.toEntity(twoPlayerGame));
+        TwoPlayerGameNode node = TwoPlayerGamePersistenceMapper.INSTANCE.toEntity(twoPlayerGame);
+        twoPlayerGameNodeRepository.save(node);
         return map;
-
-
-
     }
-
-
 }

@@ -9,7 +9,6 @@ import java.util.UUID;
 @Getter
 @Setter
 public abstract class GameState extends UUIDDomainIdentifier {
-    protected final UUID uuid;
     protected GamePhase gamePhase = GamePhase.SETUP;
 
     protected GameState() {
@@ -17,7 +16,7 @@ public abstract class GameState extends UUIDDomainIdentifier {
     }
 
     protected GameState(UUID uuid) {
-        this.uuid = uuid;
+        super(uuid);
     }
 
     public abstract boolean isPlayerTurn(IGamePlayer gamePlayer);
