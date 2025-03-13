@@ -9,6 +9,7 @@ import sg.spring.core.identifier.IModelIdentifier;
 
 @Setter
 @Getter
+//TODO: move to other project
 public class Neo4jStringSerialIdentifier implements IModelIdentifier<String> {
     @Id
     @GeneratedValue

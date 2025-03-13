@@ -7,5 +7,6 @@ import java.util.List;
 
 @Data
 public class CreateMapDTO {
+    //TODO: use x and y instead of index
     List<List<Integer>> ships;
 }
