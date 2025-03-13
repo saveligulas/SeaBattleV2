@@ -36,31 +36,12 @@ public class TwoPlayerGameController {
     public String setupMap(@PathVariable("id") UUID gameId,
                            @RequestHeader("player-id") TwoPlayerColor playerColor,
                            @RequestBody CreateMapDTO createMapDTO) {
-        return twoPlayerGameService.setupMap(gameId, playerColor, createMapDTO.ships).toString();
+        return twoPlayerGameService.setupMap(gameId, playerColor, createMapDTO.ships).toString(); //TODO: change this so it doesnt work with index but with x and y coordinates
     }
 
     @GetMapping("game/{id}/phase")
     public String getGamePhase(@PathVariable("id") UUID gameId) {
         return twoPlayerGameService.getGamePhase(gameId).toString();
-    }
-    
-    @GetMapping("game/{id}/setup-status")
-    public boolean isGameSetupComplete(@PathVariable("id") UUID gameId) {
-        return twoPlayerGameService.isGameSetupComplete(gameId);
-    }
-    
-    @GetMapping("game/{id}/player-map")
-    public boolean hasPlayerSetupMap(
-            @PathVariable("id") UUID gameId,
-            @RequestHeader("player-id") TwoPlayerColor playerColor) {
-        return twoPlayerGameService.hasPlayerSetupMap(gameId, playerColor);
-    }
-    
-    @GetMapping("game/{id}/map/owner")
-    public String viewMapAsOwner(
-            @PathVariable("id") UUID gameId,
-            @RequestHeader("player-id") TwoPlayerColor playerColor) {
-        return twoPlayerGameService.getMapForOwner(gameId, playerColor);
     }
     
     @GetMapping("game/{id}/map/opponent")

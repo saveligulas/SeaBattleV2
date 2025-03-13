@@ -30,13 +30,11 @@ public class TwoPlayerGame extends GameState {
 
     @Override
     public boolean isPlayerTurn(IGamePlayer gamePlayer) {
-        // Check if we're in PLAY phase and compare player's color ordinal with the active player
         if (gamePhase != GamePhase.PLAY) {
             return false;
         }
         
-        if (gamePlayer instanceof TwoPlayerGamePlayer) {
-            TwoPlayerGamePlayer twoPlayerGamePlayer = (TwoPlayerGamePlayer) gamePlayer;
+        if (gamePlayer instanceof TwoPlayerGamePlayer twoPlayerGamePlayer) {
             return twoPlayerGamePlayer.getColor() == activePlayer;
         }
         
@@ -70,7 +68,7 @@ public class TwoPlayerGame extends GameState {
     }
     
     public void checkForGameEnd() {
-        if (playerRed.hasLost() || playerBlue.hasLost()) {
+        if (playerRed.hasWon() || playerBlue.hasWon()) {
             gamePhase = GamePhase.END;
         }
     }
@@ -80,13 +78,13 @@ public class TwoPlayerGame extends GameState {
             return null;
         }
         
-        if (playerRed.hasLost()) {
-            return playerBlue;
-        } else if (playerBlue.hasLost()) {
+        if (playerRed.hasWon()) {
             return playerRed;
+        } else if (playerBlue.hasWon()) {
+            return playerBlue;
         }
         
-        return null; // No winner yet
+        throw new IllegalStateException("Game has ended without determining a winner");
     }
 
     @Override

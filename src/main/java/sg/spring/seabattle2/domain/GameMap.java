@@ -8,7 +8,7 @@ import java.util.UUID;
 @Getter
 @Setter
 public class GameMap {
-    private String id;
+    private String id; // need both ids for neo4j to handle the relationship with a node correctly
     private String relationshipId;
     private final ShipPart[] shipParts;
     private final int sizeRoot;

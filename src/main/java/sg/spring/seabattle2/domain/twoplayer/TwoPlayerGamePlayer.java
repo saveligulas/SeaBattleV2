@@ -2,7 +2,6 @@ package sg.spring.seabattle2.domain.twoplayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import sg.spring.core.domain.SerialDomainIdentifier;
 import sg.spring.seabattle2.domain.GameMap;
 import sg.spring.seabattle2.domain.IGamePlayer;
 import sg.spring.seabattle2.domain.ShipPart;
@@ -29,23 +28,22 @@ public class TwoPlayerGamePlayer implements IGamePlayer {
     }
 
     @Override
-    public GameMap getOpponentMap() {
+    public GameMap getOpponentMap() { // map from the OPPONENT where the OPPONENTS ships are placed
         return opponentMap;
     }
     
-    public boolean hasLost() {
+    public boolean hasWon() {
         if (opponentMap == null) {
-            return false; // Can't lose if map isn't set up yet
+            return false;
         }
-        
-        // Check if all ship parts are hit
+
         for (ShipPart part : opponentMap.getShipParts()) {
             if (part != null && part != ShipPart.MISSED && !part.isHit()) {
-                return false; // Found at least one ship part that's not hit
+                return false;
             }
         }
         
-        return true; // All ship parts are hit
+        return true;
     }
     
     @Override

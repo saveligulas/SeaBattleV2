@@ -2,7 +2,6 @@ package sg.spring.seabattle2.persistence.mapper;
 
 import org.jspecify.annotations.Nullable;
 import sg.spring.core.mapper.IDomainPersistenceMapper;
-import sg.spring.seabattle2.domain.twoplayer.TwoPlayerGame;
 import sg.spring.seabattle2.domain.twoplayer.TwoPlayerGamePlayer;
 import sg.spring.seabattle2.persistence.GameMapNodeRelation;
 import sg.spring.seabattle2.persistence.TwoPlayerGamePlayerNode;

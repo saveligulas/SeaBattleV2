@@ -28,16 +28,18 @@ public class TwoPlayerGameService {
         this.twoPlayerGameNodeRepository = twoPlayerGameNodeRepository;
     }
 
+    //abstraction for the service
     private TwoPlayerGame retrieveGame(UUID gameId) {
         return TwoPlayerGamePersistenceMapper.INSTANCE.toDomain(twoPlayerGameNodeRepository.findById(gameId)
                 .orElseThrow(() -> new EntityNotFoundException("Two player game with id: " + gameId + " not found")));
     }
 
+    //abstraction for the service
     private void saveGame(TwoPlayerGame game) {
         try {
             TwoPlayerGameNode node = TwoPlayerGamePersistenceMapper.INSTANCE.toEntity(game);
-            twoPlayerGameNodeRepository.save(node);
-        } catch (Exception e) {
+            twoPlayerGameNodeRepository.save(node); //ignore might be null here
+        } catch (Exception e) { //TODO: catch more specific exceptions and throw different exceptions after
             throw new RuntimeException("Error saving game state: " + e.getMessage(), e);
         }
     }
@@ -54,34 +56,16 @@ public class TwoPlayerGameService {
         return retrieveGame(gameId).isShipsSetup();
     }
     
-    public boolean hasPlayerSetupMap(UUID gameId, TwoPlayerColor playerColor) {
-        TwoPlayerGame game = retrieveGame(gameId);
-        TwoPlayerGamePlayer inversePlayer = game.getInversePlayer(playerColor);
-        return inversePlayer.getOpponentMap() != null;
-    }
-    
-    public String getMapForOwner(UUID gameId, TwoPlayerColor playerColor) {
-        TwoPlayerGame game = retrieveGame(gameId);
-        TwoPlayerGamePlayer inversePlayer = game.getInversePlayer(playerColor);
-        
-        if (inversePlayer.getOpponentMap() == null) {
-            return "Map not set up yet for player " + playerColor;
-        }
-        
-        return "Map for player " + playerColor + " (showing ship locations):\n" + 
-               inversePlayer.getOpponentMap().toStringForOwner();
-    }
-    
     public String getMapForOpponent(UUID gameId, TwoPlayerColor playerColor) {
         TwoPlayerGame game = retrieveGame(gameId);
-        TwoPlayerGamePlayer inversePlayer = game.getInversePlayer(playerColor);
+        TwoPlayerGamePlayer player = game.getPlayerByColor(playerColor);
         
-        if (inversePlayer.getOpponentMap() == null) {
+        if (player.getOpponentMap() == null) {
             return "Map not set up yet for player " + playerColor;
         }
         
         return "Map for player " + playerColor + " (opponent view - only showing hits and misses):\n" + 
-               inversePlayer.getOpponentMap().toStringForOpponent();
+               player.getOpponentMap().toStringForOpponent();
     }
     
     public TwoPlayerColor getCurrentTurn(UUID gameId) {
@@ -92,57 +76,44 @@ public class TwoPlayerGameService {
     public TwoPlayerColor getWinner(UUID gameId) {
         TwoPlayerGame game = retrieveGame(gameId);
         if (game.getGamePhase() != GamePhase.END || game.getWinner() == null) {
-            return null; // No winner yet
+            return null;
         }
         return game.getWinner().getColor();
     }
     
     public ShotResultDTO fireShot(UUID gameId, TwoPlayerColor playerColor, int x, int y) {
         TwoPlayerGame game = retrieveGame(gameId);
-        
-        // Validate the game is in PLAY phase
+
         if (game.getGamePhase() != GamePhase.PLAY) {
             throw new IllegalStateException("Cannot fire: Game is not in PLAY phase. Current phase: " + game.getGamePhase());
         }
-        
-        // Validate it's the player's turn
+
         TwoPlayerGamePlayer player = game.getPlayerByColor(playerColor);
         if (!game.isPlayerTurn(player)) {
             throw new IllegalStateException("Cannot fire: It's not your turn. Current turn: " + game.getActivePlayerColor());
         }
-        
-        // Get the opponent's map (which is on the inverse player)
-        TwoPlayerGamePlayer targetPlayer = game.getInversePlayer(playerColor);
-        GameMap targetMap = targetPlayer.getOpponentMap();
+
+        GameMap targetMap = player.getOpponentMap();
         if (targetMap == null) {
             throw new IllegalStateException("Cannot fire: Target map is not set up");
         }
-        
-        // Check if the index is valid
+
         int index = targetMap.getSizeRoot() * y + x;
         if (index < 0 || index >= targetMap.getShipParts().length) {
             throw new IllegalArgumentException("Shot coordinates out of bounds");
         }
-        
-        // Fire the shot
+
         ShotResult result = targetMap.hit(x, y);
-        
-        // Check if the game has ended after the shot
         game.checkForGameEnd();
-        
-        // Save the state after hit
         saveGame(game);
-        
-        // Switch turns only if it was a miss
+
         boolean turnEnded = false;
         if (result == ShotResult.MISS) {
             game.switchTurn();
             turnEnded = true;
-            // Save again after turn switch
             saveGame(game);
         }
-        
-        // Prepare result
+
         TwoPlayerColor winner = null;
         if (game.getGamePhase() == GamePhase.END && game.getWinner() != null) {
             winner = game.getWinner().getColor();
@@ -170,35 +141,29 @@ public class TwoPlayerGameService {
     }
 
     public GameMap setupMap(UUID gameId, TwoPlayerColor playerColor, List<List<Integer>> ships) {
+        //TODO: check if the ships are placed correctly and if the size of them is in the game allowed ship sizes
         TwoPlayerGame twoPlayerGame = retrieveGame(gameId);
         TwoPlayerGamePlayer player = twoPlayerGame.getInversePlayer(playerColor);
 
-        // Create a new map and make sure no existing map is there
         if (player.getOpponentMap() != null) {
             throw new IllegalStateException("Map for " + playerColor + " is already set up");
         }
         
         GameMap map = new GameMap();
-        // We don't set relationshipId here, let Neo4j generate it
-        
-        // Place ships on the map
+
         for (List<Integer> ship : ships) {
-            // Create a ship with a single UUID for all parts of the same ship
             UUID shipId = UUID.randomUUID();
-            
-            // First place all parts
+
             for (Integer pos : ship) {
                 ShipPart part = new ShipPart(shipId);
                 map.placeShipPart(part, pos);
             }
-            
-            // Then connect all parts
+
             for (Integer pos : ship) {
                 ShipPart part = map.getShipParts()[pos];
                 if (part != null) {
-                    // Create array of other positions
                     int[] otherPositions = ship.stream()
-                            .filter(p -> !p.equals(pos))
+                            .filter(p -> !p.equals(pos)) // filters out position of current part
                             .mapToInt(Integer::intValue)
                             .toArray();
                     part.setOtherPartsLocations(otherPositions);
@@ -207,8 +172,7 @@ public class TwoPlayerGameService {
         }
 
         player.setOpponentMap(map);
-        
-        // Check if both players have set up their maps and advance the game phase if needed
+
         if (twoPlayerGame.isShipsSetup()) {
             twoPlayerGame.setGamePhase(GamePhase.PLAY);
         }

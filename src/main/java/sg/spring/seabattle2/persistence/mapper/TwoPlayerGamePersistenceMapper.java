@@ -5,8 +5,6 @@ import sg.spring.seabattle2.domain.twoplayer.TwoPlayerColor;
 import sg.spring.seabattle2.domain.twoplayer.TwoPlayerGame;
 import sg.spring.seabattle2.persistence.TwoPlayerGameNode;
 
-import java.util.UUID;
-
 public class TwoPlayerGamePersistenceMapper implements IDomainPersistenceMapper<TwoPlayerGame, TwoPlayerGameNode> {
     public static final TwoPlayerGamePersistenceMapper INSTANCE = new TwoPlayerGamePersistenceMapper();
 
