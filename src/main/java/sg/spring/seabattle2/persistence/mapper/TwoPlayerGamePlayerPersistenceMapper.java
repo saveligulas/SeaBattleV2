@@ -4,6 +4,7 @@ import org.jspecify.annotations.Nullable;
 import sg.spring.core.mapper.IDomainPersistenceMapper;
 import sg.spring.seabattle2.domain.twoplayer.TwoPlayerGame;
 import sg.spring.seabattle2.domain.twoplayer.TwoPlayerGamePlayer;
+import sg.spring.seabattle2.persistence.GameMapNodeRelation;
 import sg.spring.seabattle2.persistence.TwoPlayerGamePlayerNode;
 import sg.spring.seabattle2.persistence.TwoPlayerGamePlayerRelation;
 
@@ -40,7 +41,11 @@ public class TwoPlayerGamePlayerPersistenceMapper implements IDomainPersistenceM
 
         TwoPlayerGamePlayerNode playerNode = new TwoPlayerGamePlayerNode();
         playerNode.setName(domain.getName());
-        playerNode.setGameMap(GameMapPersistenceMapper.INSTANCE.toEntity(domain.getOpponentMap()));
+        
+        GameMapNodeRelation mapRelation = GameMapPersistenceMapper.INSTANCE.toEntity(domain.getOpponentMap());
+        if (mapRelation != null) {
+            playerNode.setGameMap(mapRelation);
+        }
 
         relation.setPlayer(playerNode);
 

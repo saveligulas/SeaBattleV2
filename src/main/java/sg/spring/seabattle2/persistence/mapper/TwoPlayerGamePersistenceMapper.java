@@ -5,6 +5,8 @@ import sg.spring.seabattle2.domain.twoplayer.TwoPlayerColor;
 import sg.spring.seabattle2.domain.twoplayer.TwoPlayerGame;
 import sg.spring.seabattle2.persistence.TwoPlayerGameNode;
 
+import java.util.UUID;
+
 public class TwoPlayerGamePersistenceMapper implements IDomainPersistenceMapper<TwoPlayerGame, TwoPlayerGameNode> {
     public static final TwoPlayerGamePersistenceMapper INSTANCE = new TwoPlayerGamePersistenceMapper();
 
@@ -18,7 +20,9 @@ public class TwoPlayerGamePersistenceMapper implements IDomainPersistenceMapper<
             return null;
         }
 
-        TwoPlayerGame game = new TwoPlayerGame(entity.getIdentifier());
+        TwoPlayerGame game = new TwoPlayerGame();
+        game.setIdentifier(entity.getIdentifier());
+
         //TODO: DRY this
         game.setPlayerRed(TwoPlayerGamePlayerPersistenceMapper.INSTANCE.toDomain(entity.getPlayers()
                 .stream()
@@ -32,6 +36,7 @@ public class TwoPlayerGamePersistenceMapper implements IDomainPersistenceMapper<
                 .orElse(null)));
         game.setAllowedShips(entity.getAllowedShips());
         game.setGamePhase(entity.getPhase());
+        game.setActivePlayer(entity.getActivePlayer());
 
         return game;
     }
@@ -48,6 +53,7 @@ public class TwoPlayerGamePersistenceMapper implements IDomainPersistenceMapper<
         entity.getPlayers().add(TwoPlayerGamePlayerPersistenceMapper.INSTANCE.toEntity(domain.getPlayerBlue()));
         entity.setAllowedShips(domain.getAllowedShips());
         entity.setPhase(domain.getGamePhase());
+        entity.setActivePlayer(domain.getActivePlayerColor());
 
         return entity;
     }

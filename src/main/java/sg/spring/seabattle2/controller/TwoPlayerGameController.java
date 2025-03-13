@@ -1,14 +1,7 @@
 package sg.spring.seabattle2.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sg.spring.seabattle2.domain.twoplayer.TwoPlayerColor;
 import sg.spring.seabattle2.service.TwoPlayerGameService;
 
@@ -46,4 +39,52 @@ public class TwoPlayerGameController {
         return twoPlayerGameService.setupMap(gameId, playerColor, createMapDTO.ships).toString();
     }
 
+    @GetMapping("game/{id}/phase")
+    public String getGamePhase(@PathVariable("id") UUID gameId) {
+        return twoPlayerGameService.getGamePhase(gameId).toString();
+    }
+    
+    @GetMapping("game/{id}/setup-status")
+    public boolean isGameSetupComplete(@PathVariable("id") UUID gameId) {
+        return twoPlayerGameService.isGameSetupComplete(gameId);
+    }
+    
+    @GetMapping("game/{id}/player-map")
+    public boolean hasPlayerSetupMap(
+            @PathVariable("id") UUID gameId,
+            @RequestHeader("player-id") TwoPlayerColor playerColor) {
+        return twoPlayerGameService.hasPlayerSetupMap(gameId, playerColor);
+    }
+    
+    @GetMapping("game/{id}/map/owner")
+    public String viewMapAsOwner(
+            @PathVariable("id") UUID gameId,
+            @RequestHeader("player-id") TwoPlayerColor playerColor) {
+        return twoPlayerGameService.getMapForOwner(gameId, playerColor);
+    }
+    
+    @GetMapping("game/{id}/map/opponent")
+    public String viewMapAsOpponent(
+            @PathVariable("id") UUID gameId,
+            @RequestHeader("player-id") TwoPlayerColor playerColor) {
+        return twoPlayerGameService.getMapForOpponent(gameId, playerColor);
+    }
+    
+    @PostMapping("game/{id}/fire")
+    public ShotResultDTO fire(
+            @PathVariable("id") UUID gameId,
+            @RequestHeader("player-id") TwoPlayerColor playerColor,
+            @RequestBody ShotDTO shotDTO) {
+        return twoPlayerGameService.fireShot(gameId, playerColor, shotDTO.getX(), shotDTO.getY());
+    }
+    
+    @GetMapping("game/{id}/turn")
+    public TwoPlayerColor getCurrentTurn(@PathVariable("id") UUID gameId) {
+        return twoPlayerGameService.getCurrentTurn(gameId);
+    }
+    
+    @GetMapping("game/{id}/winner")
+    public TwoPlayerColor getWinner(@PathVariable("id") UUID gameId) {
+        return twoPlayerGameService.getWinner(gameId);
+    }
 }

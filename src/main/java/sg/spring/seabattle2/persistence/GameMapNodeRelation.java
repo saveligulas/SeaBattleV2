@@ -11,7 +11,7 @@ import org.springframework.data.neo4j.core.schema.TargetNode;
 @Setter
 public class GameMapNodeRelation {
     @RelationshipId
-    private Long id;
+    private String id;
     @TargetNode
     private GameMapNode map;
 }

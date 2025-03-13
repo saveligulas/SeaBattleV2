@@ -2,10 +2,14 @@ package sg.spring.seabattle2.persistence;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
+import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 import sg.spring.core.persistence.provider.neo4j.Neo4jNodeIdentifier;
 import sg.spring.seabattle2.domain.GamePhase;
+import sg.spring.seabattle2.domain.twoplayer.TwoPlayerColor;
 
 import java.util.HashSet;
 import java.util.List;
@@ -20,11 +24,8 @@ public class TwoPlayerGameNode extends Neo4jNodeIdentifier<UUID> {
     private Set<TwoPlayerGamePlayerRelation> players = new HashSet<>();
     private GamePhase phase;
     private List<Integer> allowedShips;
+    private TwoPlayerColor activePlayer = TwoPlayerColor.RED;
 
     public TwoPlayerGameNode() {
-    }
-
-    public TwoPlayerGameNode(UUID id) {
-        super(id);
     }
 }

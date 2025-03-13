@@ -28,7 +28,7 @@ public class GameMapPersistenceMapper implements IDomainPersistenceMapper<GameMa
         }
 
         GameMap gameMap = new GameMap(entity.getMap().getRootSize());
-        gameMap.setIdentifier(entity.getMap().getIdentifier());
+        gameMap.setId(entity.getMap().getId());
         gameMap.setRelationshipId(entity.getId());
 
         Map<UUID, Set<ShipPartRelation>> shipMap = entity.getMap().getShipParts().stream()
@@ -38,6 +38,9 @@ public class GameMapPersistenceMapper implements IDomainPersistenceMapper<GameMa
                 ));
 
         for (Map.Entry<UUID, Set<ShipPartRelation>> entry : shipMap.entrySet()) {
+            if (entry.getKey() == null || entry.getValue() == null || entry.getValue().isEmpty()) {
+                continue; // Skip invalid entries
+            }
             for (ShipPartRelation shipPartRelation : entry.getValue()) {
                 ShipPart shipPart = new ShipPart();
                 shipPart.setIdentifier(entry.getKey());
@@ -54,6 +57,11 @@ public class GameMapPersistenceMapper implements IDomainPersistenceMapper<GameMa
                 gameMap.getShipParts()[currentIndex] = shipPart;
             }
         }
+        
+        // Handle missed shots
+        for (Integer missedIndex : entity.getMap().getMissedIndexes()) {
+            gameMap.getShipParts()[missedIndex] = ShipPart.MISSED;
+        }
 
         return gameMap;
     }
@@ -66,9 +74,9 @@ public class GameMapPersistenceMapper implements IDomainPersistenceMapper<GameMa
 
         GameMapNode gameMapNode = new GameMapNode();
 
-        //TODO: fix naming
+        // Preserve the identifier
+        gameMapNode.setId(domain.getId());
         gameMapNode.setRootSize(domain.getSizeRoot());
-        gameMapNode.setId(domain.getIdentifier());
 
         for (int i = 0; i < domain.getShipParts().length; i++) {
             ShipPart part = domain.getShipParts()[i];
@@ -79,12 +87,13 @@ public class GameMapPersistenceMapper implements IDomainPersistenceMapper<GameMa
 
             if (part == ShipPart.MISSED) {
                 gameMapNode.getMissedIndexes().add(i);
+                continue; // Skip creating relationship for missed shots
             }
 
             ShipPartRelation relation = new ShipPartRelation();
             relation.setIndex(i);
             relation.setHit(part.isHit());
-            relation.setId(part.getElementId());
+            relation.setId(part.getElementId()); // Preserve relationship ID if it exists
 
             ShipNode shipNode = new ShipNode();
             shipNode.setId(part.getIdentifier());
@@ -94,6 +103,7 @@ public class GameMapPersistenceMapper implements IDomainPersistenceMapper<GameMa
         }
 
         GameMapNodeRelation gameMapNodeRelation = new GameMapNodeRelation();
+        // Preserve the relationship ID
         gameMapNodeRelation.setId(domain.getRelationshipId());
         gameMapNodeRelation.setMap(gameMapNode);
 
